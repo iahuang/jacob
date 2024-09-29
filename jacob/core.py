@@ -152,6 +152,11 @@ class Tensor:
     def zero_grad(self) -> None:
         self.grad = np.zeros_like(self._value)
 
+    def set_value(self, value: np.ndarray) -> None:
+        self._value = value
+        self.zero_grad()
+        self._derived_from = None
+
 
 class ScalarMultiply(DifferentiableF):
     coeff: float

@@ -4,7 +4,8 @@ A toy machine learning and automatic differentiation library which prioritizes m
 
 ### Important Notes
 
--   `jacob` uses the `numpy` library for numerical operations.
+-   `jacob` intentionally shares design conventions with PyTorch.
+-   `jacob` uses the `numpy` library for numerical operations. No other dependencies are required.
 -   `jacob.Tensor` objects are used to represent all numerical data. Canonically, the `Tensor` object
     only support two shapes: `(N, d1, d2)` and `(d1, d2)`. The former is used to represent a batch
     of `N` matrices of shape `(d1, d2)`, while the latter is used to represent a single matrix of
@@ -39,13 +40,26 @@ N = 100
 net = MyNeuralNet()
 x = Tensor(np.random.randn(N, 2, 1))
 target = Tensor(np.random.randn(N, 1, 1))
-y = net.forward(x)
 
-loss = ((y - target) ** 2).sum()
-loss.backward()
 
-# Notice that the gradient dloss/dW1 is a Nx3x2 tensor, where each element
-# is the gradient of the loss with respect to the corresponding training example
-print("W1 grad:", net.W1.grad.sum(axis=0) / N)
-print("b1 grad:", net.b1.grad.sum(axis=0) / N)
+EPOCHS = 100
+LR = 0.01
+
+for _ in range(EPOCHS):
+    # Notice that the gradient dloss/dW1 is a Nx3x2 tensor, where each element
+    # is the gradient of the loss with respect to the corresponding training example
+
+    y = net.forward(x)
+
+    loss = ((y - target) ** 2).sum()
+    loss.backward()
+
+    print(loss.np.mean())
+
+    # set_value() automatically zeros the gradients
+    net.W1.set_value(net.W1.np - LR * net.W1.grad)
+    net.b1.set_value(net.b1.np - LR * net.b1.grad)
+    net.W2.set_value(net.W2.np - LR * net.W2.grad)
+    net.b2.set_value(net.b2.np - LR * net.b2.grad)
+
 ```
