@@ -11,9 +11,9 @@ class MyNeuralNet:
         self.b2 = Tensor(np.random.randn(1))
 
     def forward(self, x: Tensor) -> Tensor:
-        h = matmul(self.W1, x) + self.b1
+        h = self.W1 @ x + self.b1
         h = relu(h)
-        y = matmul(self.W2, h) + self.b2
+        y = self.W2 @ h + self.b2
         return sigmoid(y)
 
 
